@@ -98,5 +98,5 @@ Scikit-learn
 Cosine Similarity
 Neural Collaborative Filtering (NCF)
 
-👤 Author
+👤 Sunwei Neo
 Built as a learning project for recommender systems using deep learning.
