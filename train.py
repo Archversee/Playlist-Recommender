@@ -6,10 +6,10 @@ from datasets.bpr_dataset import BPRDataset, bpr_loss
 from tqdm import tqdm
 
 def train_bpr(model, train_df, train_pos_dict, num_items,
-              epochs=2, batch_size=512, lr=1e-3, device="cpu"):
+              epochs=5, batch_size=512, lr=1e-3, device="cpu"):
 
     print("train_df Full size:", len(train_df))
-    train_df = train_df.sample(frac=0.1, random_state=42).reset_index(drop=True)
+    train_df = train_df.sample(frac=0.2, random_state=42).reset_index(drop=True)
     print("train_df sub-sampple size:", len(train_df))
     loader = DataLoader(
         BPRDataset(train_df, num_items, train_pos_dict),

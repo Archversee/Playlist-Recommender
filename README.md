@@ -1,102 +1,85 @@
-🎵 Music Recommendation System (Neural Collaborative Filtering)
+🎵 Playlist Recommender System
 
-This project implements a music recommendation system using Neural Collaborative Filtering (NCF) with PyTorch. It learns user–song interaction patterns from listening history and recommends songs users are likely to enjoy.
-The project also prepares content-based audio similarity features, enabling future hybrid recommendations.
+A hybrid music recommendation system using BPR-Neural Collaborative Filtering (BPR-NCF) and content-based similarity.
+The system can recommend tracks to users based on their listening history while also handling cold-start scenarios.
 
-📌 Features
-Neural Collaborative Filtering (NCF) with embeddings
-Implicit feedback modeling (listened / not listened)
-Content-based audio similarity using cosine similarity
-Precision@K evaluation
-Model persistence (save/load trained models)
-GPU support (CUDA if available)
+Project Overview:
+The Playlist Recommender combines collaborative filtering and content-based filtering:
 
-🧠 Model Overview
-1. Collaborative Filtering
-Users and songs are represented as learned embeddings
-A multi-layer perceptron (MLP) predicts the probability that a user will listen to a song
+- Collaborative Filtering (BPR-NCF): Learns user and track embeddings from implicit feedback (listens).
+- Content-Based Filtering: Uses track audio features (danceability, energy, tempo, etc.) to find similar tracks.
+- Hybrid Recommendation: Weighted combination of CF + CB to improve recommendations and handle cold-start users.
 
-2. Content-Based Similarity
-Audio features (danceability, energy, tempo, etc.) are normalized
-Cosine similarity measures similarity between songs
-⚠️ Currently computed but not yet integrated into final recommendations
+Features:
+- Train a BPR-NCF model on user listening history.
+- Precompute content similarity matrix for tracks.
+- Hybrid recommendations that combine CF and content-based scores.
+- Evaluate using Recall@K and NDCG@K metrics.
+- Supports saving/loading the trained model to avoid retraining.
+- Handles cold-start users using content similarity fallback.
 
+Project Structure:
+Playlist-Recommender/
+│
+├─ data/
+│   ├─ music_info.csv           # Track metadata & audio features
+│   └─ listening_history.csv    # User listening data
+│
+├─ datasets/
+│   └─ bpr_dataset.py           # BPR Dataset & loss function
+│
+├─ models/
+│   ├─ bpr_ncf.py               # BPR-NCF model
+│   └─ recommender.py           # Hybrid Recommender class
+│
+├─ utils/
+│   ├─ data_utils.py            # Data loading & encoding
+│   ├─ content_utils.py         # Content similarity functions
+│   └─ metrics.py               # Recall & NDCG evaluation
+│
+├─ train.py                     # Training script for BPR
+├─ main.py                      # Main pipeline (train/eval/recommend)
+└─ README.md
 
-📂 Project Structure
-.
-├── data/
-│   ├── music_info.csv
-│   └── listening_history.csv
-├── user2idx.pkl
-├── track2idx.pkl
-├── ncf_model.pth
-├── app.py   # main script
-└── README.md
+Usage:
+Run the main pipeline
+- python main.py
 
-📊 Datasets
-1. music_info.csv : Contains song metadata and audio features:
-    1.track_id
-    2.name
-    3.artist
-    4.danceability, energy, tempo, valence, etc.
-
-2. listening_history.csv : Contains user listening behavior:
-    1.user_id
-    2.track_id
-    3.playcount
-Listening behavior is converted to binary implicit feedback:
-listen = 1 if playcount > 0 else 0
-
-
-⚙️ Installation
-1. pip install torch pandas numpy scikit-learn
-
-(Optional: install CUDA-enabled PyTorch for GPU support)
-
-▶️ Running the Project
-python app.py               # Fast (10% data)
-FULL_TRAIN=1 python app.py  # Full train (slow)
-
-    What happens:
-        1.Data is loaded and cleaned
-        2.Users and tracks are encoded
-        3.Audio features are scaled and compared
-        4.The NCF model is trained (or loaded if already trained)
-        5.Precision@10 is evaluated
-        6.Top-N song recommendations are generated
-
-📈 Evaluation Metric
-Precision@K
-Measures how many of the top-K recommended songs were actually listened to:
-
-Precision@K = Relevant songs in top K / K
-	​
+What it does:
+1. Loads and encodes user & track data.
+2. Computes content similarity between tracks.
+3. Splits data into train/test sets.
+4. Trains or loads a BPR-NCF model.
+5. Evaluates model with Recall@10 and NDCG@10.
+6. Outputs top recommendations for a sample user.
 
 
-💾 Model Persistence
+Theory & Approach:
+1. Implicit Feedback
+Only positive interactions (listens > 0) are considered.
+Converts listen counts to binary labels (1 = listened, 0 = not listened).
 
-Trained model saved as: ncf_model.pth
-User and track encodings saved as:
-    1. user2idx.pkl
-    2. track2idx.pkl
+2. BPR-Neural Collaborative Filtering
+Learns user & track embeddings.
 
-The model will automatically load these files if they exist.
+Uses pairwise ranking loss:
+- 𝐿 = −∑(𝑢,𝑖,𝑗)ln𝜎(𝑠𝑢𝑖−𝑠𝑢𝑗)
+Encourages the model to rank positive items higher than negatives.
 
-🚀 Future Improvements
-Integrate content-based similarity into final recommendations
-Add negative sampling for better training
-Use ranking loss (e.g., BPR loss)
-Add Recall@K / NDCG@K
-Cold-start handling for new users or songs
-Convert to a full hybrid recommender system
+3. Content-Based Filtering
+Uses track audio features to calculate similarity between tracks.
+Useful for cold-start users or new tracks.
 
-📚 Technologies Used
-Python
-PyTorch
-Pandas & NumPy
-Scikit-learn
-Cosine Similarity
-Neural Collaborative Filtering (NCF)
+4. Hybrid Recommendation
+Combines collaborative filtering and content-based scores:
+final_score = 𝛼 ⋅ CF_score + (1−𝛼) ⋅ CB_score
+α = 0.7 by default (70% CF, 30% content)
+
+5. Evaluation
+Recall@K: fraction of relevant tracks in top-K recommendations.
+NDCG@K: considers position of relevant tracks in top-K.
+
+Evaluates only on tracks the user hasn't seen in training.
 
 👤 Sunwei Neo
 Built as a learning project for recommender systems using deep learning.
