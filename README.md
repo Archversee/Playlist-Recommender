@@ -18,6 +18,7 @@ Features:
 - Supports saving/loading the trained model to avoid retraining.
 - Handles cold-start users using content similarity fallback.
 
+```bash
 Project Structure:
 Playlist-Recommender/
 │
@@ -40,6 +41,8 @@ Playlist-Recommender/
 ├─ train.py                     # Training script for BPR
 ├─ main.py                      # Main pipeline (train/eval/recommend)
 └─ README.md
+```
+---
 
 Usage:
 Run the main pipeline
