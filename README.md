@@ -1,4 +1,4 @@
-🎵 Playlist Recommender System
+# Playlist Recommender System
 
 A hybrid music recommendation system using BPR-Neural Collaborative Filtering (BPR-NCF) and content-based similarity.
 The system can recommend tracks to users based on their listening history while also handling cold-start scenarios.
@@ -18,8 +18,8 @@ Features:
 - Supports saving/loading the trained model to avoid retraining.
 - Handles cold-start users using content similarity fallback.
 
-```bash
 Project Structure:
+```bash
 Playlist-Recommender/
 │
 ├─ data/
@@ -84,5 +84,4 @@ NDCG@K: considers position of relevant tracks in top-K.
 
 Evaluates only on tracks the user hasn't seen in training.
 
-👤 Sunwei Neo
 Built as a learning project for recommender systems using deep learning.
